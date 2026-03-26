@@ -3,37 +3,22 @@ import { Redis } from "@upstash/redis";
 const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
-  const name = "Q8Hson";
-  const tag = "1029";
-  const apiKey = process.env.HENRIK_API_KEY;
-
   try {
-    const accountRes = await fetch(
-      `https://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`,
-      {
-        headers: { Authorization: apiKey }
-      }
-    );
-
-    const accountData = await accountRes.json();
-
-    if (!accountData || !accountData.data || !accountData.data.region) {
-      return res.status(500).send("Account API failed");
-    }
-
-    const region = accountData.data.region;
+    const name = "Q8Hson";
+    const tag = "1029";
+    const apiKey = process.env.HENRIK_API_KEY;
 
     const mmrRes = await fetch(
-      `https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${name}/${tag}`,
+      `https://api.henrikdev.xyz/valorant/v2/mmr/mena/${name}/${tag}`,
       {
-        headers: { Authorization: apiKey }
+        headers: { Authorization: apiKey },
       }
     );
 
     const data = await mmrRes.json();
 
-    if (!data || !data.data || !data.data.current_data) {
-      return res.status(500).send("MMR API failed");
+    if (!data || !data.data) {
+      return res.status(500).send("API failed");
     }
 
     const rr = data.data.current_data.ranking_in_tier;
