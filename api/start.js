@@ -11,11 +11,16 @@ export default async function handler(req, res) {
     const mmrRes = await fetch(
       `https://api.henrikdev.xyz/valorant/v2/mmr/mena/${name}/${tag}`,
       {
-        headers: { Authorization: apiKey }
+        headers: { Authorization: apiKey },
       }
     );
 
     const data = await mmrRes.json();
+
+    if (!data || !data.data) {
+      return res.status(500).send("API failed");
+    }
+
     const rr = data.data.current_data.ranking_in_tier;
 
     await redis.set("start_rr", rr);
@@ -23,7 +28,7 @@ export default async function handler(req, res) {
     await redis.set("losses", 0);
 
     res.status(200).send("Session started");
-  } catch (error) {
-    res.status(200).send("Error starting session");
+  } catch (err) {
+    res.status(500).send("Error starting session");
   }
 }
